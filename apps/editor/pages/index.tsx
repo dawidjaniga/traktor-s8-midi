@@ -1,10 +1,13 @@
+import '../dependencies/lights'
 import { useEffect } from 'react'
 import styled from 'styled-components'
 import Container from 'typedi'
 import WebMidi from 'webmidi'
+import throttle from 'lodash/throttle'
 
 import { eventBus } from '../domains/core/events'
 import useS8 from '../domains/s8'
+import usePhilpsHue from '../domains/philipsHue'
 
 const Block = styled.div`
   width: 200px;
@@ -21,6 +24,11 @@ const Iframe = styled.iframe`
   height: 100%;
 `
 
+const throttledEmit = throttle((name: string, value: number) => eventBus.emit(
+  name,
+  value
+), 100)
+
 export type ControllerName =
   | 'GainC'
   | 'LineFaderC'
@@ -30,14 +38,15 @@ export type ControllerName =
 
 export function Index () {
   useS8()
+  usePhilpsHue()
 
   useEffect(() => {
     const block = document.querySelector('#block')
     Container.set('block', block)
 
-    // window.addEventListener('mousedown', () => {
-    //   eventBus.emit('leftKnobFirstIncremented')
-    // })
+    window.addEventListener('mousedown', () => {
+      eventBus.emit('LineFaderCChangedThrottled', 50)
+    })
 
     WebMidi.enable(function (err) {
       console.log(err)
@@ -59,18 +68,22 @@ export function Index () {
       }
 
       if (input) {
-        // Listen to control change message on all channels
         input.addListener('controlchange', 'all', function (e) {
           const [controllerId, anotherId, value] = e.data
 
-          console.log(e.data)
+          // console.log(e.data)
 
           const controller =
-            controllerMap[String(controllerId) + String(anotherId)]
+            controllerMap[Number(String(controllerId) + String(anotherId))]
 
           if (controller) {
             eventBus.emit(
               `${controller.name}Changed`,
+              value / controller.maxValue
+            )
+
+            throttledEmit(
+              `${controller.name}ChangedThrottled`,
               value / controller.maxValue
             )
           }

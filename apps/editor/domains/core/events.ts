@@ -4,6 +4,7 @@ import { createNanoEvents } from 'nanoevents'
 export type Events = {
   GainCChanged: (value: number) => void
   LineFaderCChanged: (value: number) => void
+  LineFaderCChangedThrottled: (value: number) => void
   LineFaderAChanged: (value: number) => void
   LineFaderBChanged: (value: number) => void
   LineFaderDChanged: (value: number) => void
