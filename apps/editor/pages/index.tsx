@@ -1,5 +1,5 @@
 import '../dependencies/lights'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import Container from 'typedi'
 import WebMidi from 'webmidi'
@@ -24,10 +24,10 @@ const Iframe = styled.iframe`
   height: 100%;
 `
 
-const throttledEmit = throttle((name: string, value: number) => eventBus.emit(
-  name,
-  value
-), 100)
+const throttledEmit = throttle(
+  (name: string, value: number) => eventBus.emit(name, value),
+  100
+)
 
 export type ControllerName =
   | 'GainC'
@@ -39,6 +39,9 @@ export type ControllerName =
 export function Index () {
   useS8()
   usePhilpsHue()
+  const [lineCFaderValue, setLineCFader] = useState(0.5)
+  const [lineAFaderValue, setLineAFader] = useState(0.5)
+  const [lineDFaderValue, setLineDFader] = useState(0.5)
 
   useEffect(() => {
     const block = document.querySelector('#block')
@@ -94,6 +97,46 @@ export function Index () {
 
   return (
     <>
+      <div>
+        <h1>LineCFader</h1>
+        <input
+          type='range'
+          min={0}
+          max={1}
+          step={0.1}
+          value={lineCFaderValue}
+          onChange={e => {
+            throttledEmit('LineFaderCChangedThrottled', Number(e.target.value))
+            setLineCFader(Number(e.target.value))
+          }}
+        />
+
+        <h1>LineAFader</h1>
+        <input
+          type='range'
+          min={0}
+          max={1}
+          step={0.1}
+          value={lineAFaderValue}
+          onChange={e => {
+            throttledEmit('LineFaderAChangedThrottled', Number(e.target.value))
+            setLineAFader(Number(e.target.value))
+          }}
+        />
+
+        <h1>LineDFader</h1>
+        <input
+          type='range'
+          min={0}
+          max={1}
+          step={0.1}
+          value={lineDFaderValue}
+          onChange={e => {
+            throttledEmit('LineFaderAChangedThrottled', Number(e.target.value))
+            setLineDFader(Number(e.target.value))
+          }}
+        />
+      </div>
       <Block id='block' />
       {/* <Iframe
         id='video'
