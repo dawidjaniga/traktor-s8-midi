@@ -1,33 +1,30 @@
 import '../dependencies/lights'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import styled from 'styled-components'
 import Container from 'typedi'
 import WebMidi from 'webmidi'
-import throttle from 'lodash/throttle'
 
-import { eventBus } from '../domains/core/events'
+import { eventBus, throttledEmit } from '../domains/core/events'
 import useS8 from '../domains/s8'
 import usePhilpsHue from '../domains/philipsHue'
 
-const Block = styled.div`
+const Circles = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  justify-content: space-between;
+  align-items: center;
+  width: 80%;
+  height: 90vh;
+  margin: auto;
+`
+
+const Circle = styled.div`
   width: 200px;
   height: 200px;
-  background: limegreen;
-  position: absolute;
-  background-image: url('https://scontent-waw1-1.xx.fbcdn.net/v/t1.6435-9/241529920_4222778334458688_4735259106659692291_n.jpg?_nc_cat=104&ccb=1-5&_nc_sid=e3f864&_nc_ohc=Wnab-riOD6IAX9PyxoG&_nc_ht=scontent-waw1-1.xx&oh=7a7524250eb33959ee1101ef4b54e856&oe=61918AFE');
-  background-attachment: fixed;
-  background-size: 100% 100%;
+  border-radius: 50%;
+  background: #fff;
 `
-
-const Iframe = styled.iframe`
-  width: 100%;
-  height: 100%;
-`
-
-const throttledEmit = throttle(
-  (name: string, value: number) => eventBus.emit(name, value),
-  100
-)
 
 export type ControllerName =
   | 'GainC'
@@ -39,26 +36,33 @@ export type ControllerName =
 export function Index () {
   useS8()
   usePhilpsHue()
-  const [lineCFaderValue, setLineCFader] = useState(0.5)
-  const [lineAFaderValue, setLineAFader] = useState(0.5)
-  const [lineDFaderValue, setLineDFader] = useState(0.5)
 
   useEffect(() => {
     const block = document.querySelector('#block')
     Container.set('block', block)
 
     window.addEventListener('mousedown', () => {
-      // eventBus.emit('LineFaderCChangedThrottled', 0.1)
+      eventBus.emit('LineFaderCChangedThrottled', 0.1)
     })
 
     WebMidi.enable(function (err) {
-      console.log(err)
+      if (err) {
+        console.log('WebMIDI Error: ', err)
+      }
+
+      WebMidi.addListener('connected', function (e) {
+        console.log('MIDI Device connected', e)
+      })
+
+      WebMidi.addListener('disconnected', function (e) {
+        console.log('MIDI Device disconnected', e)
+      })
+
+      console.log(WebMidi)
       console.log(WebMidi.inputs)
       console.log(WebMidi.outputs)
 
       const input = WebMidi.getInputByName('Traktor Kontrol S8 Input')
-      console.log('input', input)
-
       const controllerMap: Record<
         number,
         { name: ControllerName; maxValue: number }
@@ -71,10 +75,16 @@ export function Index () {
       }
 
       if (input) {
+        console.log('Input Connected', input)
+
+        input.addListener('controlchange', 'all', function (e) {
+          console.log("Received 'controlchange' message.", e)
+        })
+
         input.addListener('controlchange', 'all', function (e) {
           const [controllerId, anotherId, value] = e.data
 
-          // console.log(e.data)
+          console.log('controlchange', e.data)
 
           const controller =
             controllerMap[Number(String(controllerId) + String(anotherId))]
@@ -91,64 +101,18 @@ export function Index () {
             )
           }
         })
+      } else {
+        console.error('Input not found')
       }
     })
   }, [])
 
   return (
-    <>
-      <div>
-        <h1>LineCFader</h1>
-        <input
-          type='range'
-          min={0}
-          max={1}
-          step={0.1}
-          value={lineCFaderValue}
-          onChange={e => {
-            throttledEmit('LineFaderCChangedThrottled', Number(e.target.value))
-            setLineCFader(Number(e.target.value))
-          }}
-        />
-
-        <h1>LineAFader</h1>
-        <input
-          type='range'
-          min={0}
-          max={1}
-          step={0.1}
-          value={lineAFaderValue}
-          onChange={e => {
-            throttledEmit('LineFaderAChangedThrottled', Number(e.target.value))
-            setLineAFader(Number(e.target.value))
-          }}
-        />
-
-        <h1>LineDFader</h1>
-        <input
-          type='range'
-          min={0}
-          max={1}
-          step={0.1}
-          value={lineDFaderValue}
-          onChange={e => {
-            throttledEmit('LineFaderAChangedThrottled', Number(e.target.value))
-            setLineDFader(Number(e.target.value))
-          }}
-        />
-      </div>
-      <Block id='block' />
-      {/* <Iframe
-        id='video'
-        width='100%'
-        height='100%'
-        src='https://www.youtube.com/embed/7-4GpL41DIE?controls=0'
-        title='YouTube video player'
-        frameBorder={0}
-        allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
-        allowFullScreen
-      ></Iframe> */}
-    </>
+    <Circles>
+      <Circle id='light1' />
+      <Circle id='light2' />
+      <Circle id='light3' />
+    </Circles>
   )
 }
 

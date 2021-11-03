@@ -10,6 +10,7 @@
   "private": true,
   "dependencies": {
     "@nrwl/next": "12.10.0",
+    "@types/lodash": "^4.14.176",
     "core-js": "^3.6.5",
     "nanoevents": "^6.0.1",
     "next": "11.1.0",

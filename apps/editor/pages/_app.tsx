@@ -6,7 +6,7 @@ function CustomApp ({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
-        <title>Welcome to editor!</title>
+        <title>Netguru Frontend Hangout</title>
       </Head>
       <div className='app'>
         <main>
