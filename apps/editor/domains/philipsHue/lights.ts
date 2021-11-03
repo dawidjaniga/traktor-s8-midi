@@ -1,12 +1,12 @@
 import { ILights } from './../../interfaces/lights'
 
-type PorpertyMap = {
+type PropertyMap = {
   bri: number
   sat: number
   hue: number
   on: boolean
 }
-type PropertyStateName = keyof PorpertyMap
+type PropertyStateName = keyof PropertyMap
 
 export class PhilipsLights implements ILights {
   private ip: string
@@ -22,7 +22,7 @@ export class PhilipsLights implements ILights {
   private async updateState<Property extends PropertyStateName> (
     id: number,
     property: PropertyStateName,
-    value: PorpertyMap[Property]
+    value: PropertyMap[Property]
   ) {
     try {
       await fetch(`${this.endpoint}/lights/${id}/state`, {

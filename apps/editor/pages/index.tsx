@@ -5,7 +5,7 @@ import Container from 'typedi'
 import WebMidi from 'webmidi'
 
 import { eventBus, throttledEmit } from '../domains/core/events'
-import useS8 from '../domains/s8'
+import useS8, { ControllerName } from '../domains/s8'
 import usePhilpsHue from '../domains/philipsHue'
 
 const Circles = styled.div`
@@ -26,25 +26,11 @@ const Circle = styled.div`
   background: #fff;
 `
 
-export type ControllerName =
-  | 'GainC'
-  | 'LineFaderC'
-  | 'LineFaderA'
-  | 'LineFaderB'
-  | 'LineFaderD'
-
 export function Index () {
   useS8()
   usePhilpsHue()
 
   useEffect(() => {
-    const block = document.querySelector('#block')
-    Container.set('block', block)
-
-    window.addEventListener('mousedown', () => {
-      eventBus.emit('LineFaderCChangedThrottled', 0.1)
-    })
-
     WebMidi.enable(function (err) {
       if (err) {
         console.log('WebMIDI Error: ', err)
@@ -67,19 +53,21 @@ export function Index () {
         number,
         { name: ControllerName; maxValue: number }
       > = {
-        17860: { name: 'GainC', maxValue: 127 },
-        17869: { name: 'LineFaderC', maxValue: 127 },
-        17669: { name: 'LineFaderA', maxValue: 127 },
-        17769: { name: 'LineFaderB', maxValue: 127 },
-        17969: { name: 'LineFaderD', maxValue: 127 }
+        17865: { name: 'MidC', maxValue: 127 },
+        17866: { name: 'LowC', maxValue: 127 },
+        17869: { name: 'SliderC', maxValue: 127 },
+
+        17665: { name: 'MidA', maxValue: 127 },
+        17666: { name: 'LowA', maxValue: 127 },
+        17669: { name: 'SliderA', maxValue: 127 },
+
+        17765: { name: 'MidB', maxValue: 127 },
+        17766: { name: 'LowB', maxValue: 127 },
+        17769: { name: 'SliderB', maxValue: 127 }
       }
 
       if (input) {
         console.log('Input Connected', input)
-
-        input.addListener('controlchange', 'all', function (e) {
-          console.log("Received 'controlchange' message.", e)
-        })
 
         input.addListener('controlchange', 'all', function (e) {
           const [controllerId, anotherId, value] = e.data

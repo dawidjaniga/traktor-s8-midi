@@ -1,37 +1,60 @@
-import Container from 'typedi'
 import { useEvent } from '../../core/events'
 
 export default function useKnobs () {
-  useEvent('GainCChanged', (value: number) => {
-    const block = Container.get<HTMLDivElement>('block')
-    block.style.opacity = String(value)
+  // Light 1
+  useEvent('MidCChangedThrottled', async (value: number) => {
+    const light1 = document.querySelector('#light1') as HTMLDivElement
+
+    light1.style.opacity = String(value)
   })
 
-  useEvent('LineFaderAChanged', (value: number) => {
-    const block = Container.get<HTMLDivElement>('block')
-    const maxWidth = 1000
+  // useEvent('LowCChangedThrottled', async (value: number) => {
+  //   const lights = Container.get<ILights>('lights')
 
-    block.style.width = `${value * maxWidth}px`
+  //   lights.changeSaturation(firstLightId, value)
+  // })
+
+  useEvent('SliderCChangedThrottled', async (value: number) => {
+    const light1 = document.querySelector('#light1') as HTMLDivElement
+
+    light1.style.opacity = String(value)
   })
 
-  useEvent('LineFaderCChanged', (value: number) => {
-    const block = Container.get<HTMLDivElement>('block')
-    const maxHeight = 1000
+  // // Light 2
+  // useEvent('MidAChangedThrottled', async (value: number) => {
+  //   const lights = Container.get<ILights>('lights')
 
-    block.style.height = `${value * maxHeight}px`
+  //   lights.changeHue(secondLightId, value)
+  // })
+
+  // useEvent('LowAChangedThrottled', async (value: number) => {
+  //   const lights = Container.get<ILights>('lights')
+
+  //   lights.changeSaturation(secondLightId, value)
+  // })
+
+  useEvent('SliderAChangedThrottled', async (value: number) => {
+    const light2 = document.querySelector('#light2') as HTMLDivElement
+
+    light2.style.opacity = String(value)
   })
 
-  useEvent('LineFaderBChanged', (value: number) => {
-    const block = Container.get<HTMLDivElement>('block')
-    const maxTranslate = 100
+  // // Light 3
+  // useEvent('MidBChangedThrottled', async (value: number) => {
+  //   const lights = Container.get<ILights>('lights')
 
-    block.style.left = `${value * maxTranslate}%`
-  })
+  //   lights.changeHue(thirdLightId, value)
+  // })
 
-  useEvent('LineFaderDChanged', (value: number) => {
-    const block = Container.get<HTMLDivElement>('block')
-    const maxTranslate = 100
+  // useEvent('LowBChangedThrottled', async (value: number) => {
+  //   const lights = Container.get<ILights>('lights')
 
-    block.style.top = `${value * maxTranslate}%`
+  //   lights.changeSaturation(thirdLightId, value)
+  // })
+
+  useEvent('SliderBChangedThrottled', async (value: number) => {
+    const light3 = document.querySelector('#light3') as HTMLDivElement
+
+    light3.style.opacity = String(value)
   })
 }
