@@ -25,11 +25,10 @@ export class PhilipsLights implements ILights {
     value: PorpertyMap[Property]
   ) {
     try {
-      const response = await fetch(`${this.endpoint}/lights/${id}/state`, {
+      await fetch(`${this.endpoint}/lights/${id}/state`, {
         method: 'PUT',
         body: JSON.stringify({ [property]: value })
       })
-      console.log(response)
     } catch (e) {
       console.error(`Light#${id} setting ${property} error`, e)
     }
@@ -39,11 +38,7 @@ export class PhilipsLights implements ILights {
     const maxValue = 254
     const calculatedValue = Math.floor(value * maxValue)
 
-    console.log('changeBrightness', id, value)
-
-    const res = this.updateState<'bri'>(id, 'bri', calculatedValue)
-    await res
-    console.log('res', res)
+    this.updateState<'bri'>(id, 'bri', calculatedValue)
   }
 
   changeSaturation (id: number, value: number) {

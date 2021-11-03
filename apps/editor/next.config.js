@@ -11,8 +11,8 @@ const nextConfig = {
     svgr: false
   },
   env: {
-    philipsHueIp: 'https://192.168.1.59',
-    philipsHueUsername: 'smpd53dPuPS-utEDroE68UNvKfR9wz7iboTWr0sW'
+    philipsHueIp: 'http://192.168.0.59',
+    philipsHueUsername: 'R4q5HAkSdeCrASYLoWRneGryo-vSXwIaNXgr9P0u'
   }
 }
 
