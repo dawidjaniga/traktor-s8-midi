@@ -4,7 +4,8 @@ import styled from 'styled-components'
 import WebMidi from 'webmidi'
 
 import { eventBus, throttledEmit } from '../domains/core/events'
-import useS8, { ControllerName } from '../domains/s8'
+import useCircles from '../domains/circles'
+import { ControllerName } from '../domains/s8'
 import usePhilpsHue from '../domains/philipsHue'
 
 const Circles = styled.div`
@@ -26,7 +27,7 @@ const Circle = styled.div`
 `
 
 export function Index () {
-  useS8()
+  useCircles()
   usePhilpsHue()
 
   useEffect(() => {

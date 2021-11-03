@@ -1,5 +1,3 @@
-import useKnobs from './use-cases/knobs'
-
 export type ControllerName =
   | 'MidA'
   | 'LowA'
@@ -13,7 +11,3 @@ export type ControllerName =
   | 'MidD'
   | 'LowD'
   | 'SliderD'
-
-export default function useS8 () {
-  useKnobs()
-}
