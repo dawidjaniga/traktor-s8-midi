@@ -1,13 +1,6 @@
 import { useEvent } from '../../core/events'
 
 export default function useKnobs () {
-  // Light 1
-  useEvent('MidCChangedThrottled', async (value: number) => {
-    const light1 = document.querySelector('#light1') as HTMLDivElement
-
-    light1.style.opacity = String(value)
-  })
-
   useEvent('SliderCChangedThrottled', async (value: number) => {
     const light1 = document.querySelector('#light1') as HTMLDivElement
 
