@@ -3,21 +3,25 @@ import Container from 'typedi'
 import { useEvent } from '../../core/events'
 
 const firstLightId = 1
-const secondLightId = 3
+const secondLightId = 2
+const thirdLightId = 3
 
 export default function useLights () {
-  useEvent('LineFaderCChangedThrottled', (value: number) => {
-    console.log('use case thoreels')
+  useEvent('LineFaderCChangedThrottled', async (value: number) => {
     const lights = Container.get<ILights>('lights')
-    // const officeLightId = 1
-    // const livingRoomLightFirstLightId = 2
-    // const livingRoomLightSecondLightId = 3
 
-    // lights.changeBrightness(livingRoomLightFirstLightId, value)
-    // lights.changeBrightness(livingRoomLightSecondLightId, value)
+    const response = await fetch(
+      `https://192.168.1.59/api/smpd53dPuPS-utEDroE68UNvKfR9wz7iboTWr0sW/lights/1/state`,
+      {
+        method: 'PUT',
+        body: JSON.stringify({ bri: value })
+      }
+    )
+    console.log(response)
 
-    lights.changeBrightness(firstLightId, value)
-    lights.changeBrightness(secondLightId, value)
+    // lights.changeBrightness(firstLightId, value)
+    // lights.changeBrightness(secondLightId, value)
+    // lights.changeBrightness(thirdLightId, value)
 
     // lights.setOn(livingRoomLightFirstLightId, false)
     // lights.setOn(livingRoomLightSecondLightId, false)

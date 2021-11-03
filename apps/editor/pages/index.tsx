@@ -48,7 +48,7 @@ export function Index () {
     Container.set('block', block)
 
     window.addEventListener('mousedown', () => {
-      eventBus.emit('LineFaderCChangedThrottled', 50)
+      // eventBus.emit('LineFaderCChangedThrottled', 0.1)
     })
 
     WebMidi.enable(function (err) {

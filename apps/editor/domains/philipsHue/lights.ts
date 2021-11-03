@@ -13,11 +13,9 @@ export class PhilipsLights implements ILights {
   private username: string
   private endpoint: string
 
-  constructor () {
-    this.ip = 'http://192.168.1.5'
-    // this.ip = 'http://192.168.0.59'
-    this.username = 'TPIHs77b1OtzOelifj0V5sWOEvK62F8JOBRv3r4P'
-    // this.username = 'R4q5HAkSdeCrASYLoWRneGryo-vSXwIaNXgr9P0u'
+  constructor (ip: string, username: string) {
+    this.ip = ip
+    this.username = username
     this.endpoint = `${this.ip}/api/${this.username}`
   }
 
@@ -27,20 +25,25 @@ export class PhilipsLights implements ILights {
     value: PorpertyMap[Property]
   ) {
     try {
-      await fetch(`${this.endpoint}/lights/${id}/state`, {
+      const response = await fetch(`${this.endpoint}/lights/${id}/state`, {
         method: 'PUT',
         body: JSON.stringify({ [property]: value })
       })
+      console.log(response)
     } catch (e) {
       console.error(`Light#${id} setting ${property} error`, e)
     }
   }
 
-  changeBrightness (id: number, value: number) {
+  async changeBrightness (id: number, value: number) {
     const maxValue = 254
     const calculatedValue = Math.floor(value * maxValue)
 
-    this.updateState<'bri'>(id, 'bri', calculatedValue)
+    console.log('changeBrightness', id, value)
+
+    const res = this.updateState<'bri'>(id, 'bri', calculatedValue)
+    await res
+    console.log('res', res)
   }
 
   changeSaturation (id: number, value: number) {
