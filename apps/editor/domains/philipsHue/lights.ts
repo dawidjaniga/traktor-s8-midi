@@ -1,5 +1,13 @@
 import { ILights } from './../../interfaces/lights'
 
+type PorpertyMap = {
+  bri: number
+  sat: number
+  hue: number
+  on: boolean
+}
+type PropertyStateName = keyof PorpertyMap
+
 export class PhilipsLights implements ILights {
   private ip: string
   private username: string
@@ -13,54 +21,43 @@ export class PhilipsLights implements ILights {
     this.endpoint = `${this.ip}/api/${this.username}`
   }
 
-  async changeBrightness (id: number, value: number) {
-    const maxValue = 254
-    const calculatedValue = Math.floor(value * maxValue)
-
+  private async updateState<Property extends PropertyStateName> (
+    id: number,
+    property: PropertyStateName,
+    value: PorpertyMap[Property]
+  ) {
     try {
-      console.log('brightness ', maxValue, value, calculatedValue)
-
       await fetch(`${this.endpoint}/lights/${id}/state`, {
         method: 'PUT',
-        body: JSON.stringify({ bri: calculatedValue })
+        body: JSON.stringify({ [property]: value })
       })
     } catch (e) {
-      console.error('Lights setting error', e)
+      console.error(`Light#${id} setting ${property} error`, e)
     }
   }
 
-  async changeSaturation (id: number, value: number) {
+  changeBrightness (id: number, value: number) {
+    const maxValue = 254
+    const calculatedValue = Math.floor(value * maxValue)
+
+    this.updateState<'bri'>(id, 'bri', calculatedValue)
+  }
+
+  changeSaturation (id: number, value: number) {
     const maxValue = 254
     const calculatedValue = value * maxValue
 
-    try {
-      await fetch(`${this.endpoint}/lights/${id}/state`, {
-        method: 'PUT',
-        body: JSON.stringify({ sat: calculatedValue })
-      })
-    } catch (e) {
-      console.error('Lights setting error', e)
-    }
+    this.updateState<'sat'>(id, 'sat', calculatedValue)
   }
 
   async changeHue (id: number, value: number) {
     const maxValue = 65535
     const calculatedValue = value * maxValue
 
-    try {
-      await fetch(`${this.endpoint}/lights/${id}/state`, {
-        method: 'PUT',
-        body: JSON.stringify({ hue: calculatedValue })
-      })
-    } catch (e) {
-      console.error('Lights setting error', e)
-    }
+    this.updateState<'hue'>(id, 'hue', calculatedValue)
   }
 
   async setOn (id: number, value: boolean) {
-    await fetch(`${this.endpoint}/lights/${id}/state`, {
-      method: 'PUT',
-      body: JSON.stringify({ on: value })
-    })
+    this.updateState<'on'>(id, 'on', value)
   }
 }
