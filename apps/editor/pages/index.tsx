@@ -1,7 +1,6 @@
 import '../dependencies/lights'
 import { useEffect } from 'react'
 import styled from 'styled-components'
-import Container from 'typedi'
 import WebMidi from 'webmidi'
 
 import { eventBus, throttledEmit } from '../domains/core/events'
@@ -72,7 +71,7 @@ export function Index () {
         input.addListener('controlchange', 'all', function (e) {
           const [controllerId, anotherId, value] = e.data
 
-          console.log('controlchange', e.data)
+          console.log('Control Changed', e.data)
 
           const controller =
             controllerMap[Number(String(controllerId) + String(anotherId))]
